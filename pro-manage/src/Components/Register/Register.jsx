@@ -13,6 +13,7 @@ import envelopeIcon from "../../Assets/envelopeicon.png";
 import lockIcon from "../../Assets/lockicon.png";
 import eyeIcon from "../../Assets/eyeicon.png";
 import eyeSlashIcon from "../../Assets/eyeslash.png";
+import { jwtDecode } from "jwt-decode";
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -73,16 +74,23 @@ const Register = () => {
         return;
       }
       try{
-        await axios.post(
-          // eslint-disable-next-line no-undef
-          `${process.env.REACT_APP_BACKEND_HOST}/api/auth/register`,
-          {
+        const response=await axios.post(
+          `http://127.0.0.1:3000/api/auth/register`,
+         {
             name,
             email,
             password,
             confirmPassword,
           }
         );
+        if (response.status ===201){
+          const token=response?.data?.token;
+          // eslint-disable-next-line no-unused-vars
+          const userData = jwtDecode(token);
+          localStorage.setItem("token", token);
+      
+          toast.success("Logged in Successfully!");
+        }
         toast.success("Registered Successfully!");
         navigate("/login");
       } catch (error) {
